@@ -1,0 +1,142 @@
++----------------------+   +------------------------+   +----------------------+
+|      Data Layer      |   |     Controller / App   |   |       Utilities /    |
+|      (Model)         |   |        Flow            |   |         IO           |
++----------------------+   +------------------------+   +----------------------+
+| - names: ArrayList   |   | - main()               |   | - countdownTimer()   |
+| - phones: ArrayList  |   | - play loop (menu)     |   |   (used in QuizGame) |
+| - createQuestion()   |   | - handleChoice(choice) |   | - Scanner I/O        |
++----------------------+   | - addContact()         |   +----------------------+
+                           | - viewContacts()       |
+                           | - searchContact()      |
+                           | - updateContact()      |
+                           | - deleteContact()      |
+                           +------------------------+
+
+•	Data Layer = the in-memory storage (names, phones arrays).
+•	Controller / App = orchestration, menu loop, and business logic (add/search/update/delete).
+•	Utilities / IO = console input/output helpers and timers (if present in related projects).
+
+
+
+[Start]
+   |
+   v
++---------------------------+
+|  Show Menu (1-6)          |
+|  -> Prompt for choice     |
++---------------------------+
+   |
+   v
++---------------------------+
+|  User selects option      |
++---------------------------+
+   |    |      |      |      |      \
+   |    |      |      |      |       \
+   v    v      v      v      v        v
+[Add] [View] [Search][Update][Delete] [Exit]
+  |     |       |      |      |        |
+  |     |       |      |      |        |
+  |     v       v      v      v        v
+  |  (Display) (Lookup)(Find &  (Remove)  Terminate
+  |           result) prompt)  prompt)   Program
+  |     |       |      |      |        |
+  |     |       |      |      |        |
+  |     +-------+------+------+- - - - -+
+  |                 |
+  |             [Return to Menu]
+  |                 |
+  +-----------------+
+            |
+            v
+          [End]
+
+
+
+[Start]
+  |
+  v
+[Menu] --display-->
+  "1 Add  2 View  3 Search  4 Update  5 Delete  6 Exit"
+  |
+  v
+[Choice]
+  |
+  +--> (1) Add Contact
+  |        - Prompt name, phone
+  |        - Validate: name != "" && phone.matches(\d{10})
+  |        - If duplicate (case-insensitive) => reject
+  |        - Else add to lists, show success
+  |        -> [Menu]
+  |
+  +--> (2) View Contacts
+  |        - If empty -> "No contacts"
+  |        - Else list all name: phone
+  |        -> [Menu]
+  |
+  +--> (3) Search Contact
+  |        - Prompt name
+  |        - Find index (case-insensitive)
+  |        - If found -> display contact
+  |        - Else -> "Contact not found"
+  |        -> [Menu]
+  |
+  +--> (4) Update Contact
+  |        - Prompt existing name
+  |        - If not found -> "Contact not found" -> [Menu]
+  |        - Else prompt new name (Enter to keep), new phone (Enter to keep)
+  |        - Validate phone if provided
+  |        - Ensure new name doesn't duplicate other entries
+  |        - Apply changes -> "Contact updated"
+  |        -> [Menu]
+  |
+  +--> (5) Delete Contact
+  |        - Prompt name
+  |        - Find index (case-insensitive)
+  |        - If found -> remove name & phone, "deleted"
+  |        - Else -> "Contact not found"
+  |        -> [Menu]
+  |
+  +--> (6) Exit
+           - Print "Goodbye!"
+           - Terminate program
+
+
+addContact()      -> Create & validate contact; add to data layer
+viewContacts()    -> Read & display all contacts
+searchContact()   -> Lookup by name; display single contact
+updateContact()   -> Find, validate updates, prevent duplicates, save changes
+deleteContact()   -> Find and remove contact entries (sync both lists)
+handleChoice()    -> Route the user's menu option to the correct handler
+main()            -> Application bootstrap + menu loop
+
+
++---------------------------------------------------------+-----------------------------------------------+
+| Feature                                                 | Method(s) / Implementation                    |
++---------------------------------------------------------+-----------------------------------------------+
+| Display Menu & Handle Choices                           | handleChoice(), main() loop                   |
+| Add a new contact                                       | addContact()                                  |
+| Validate contact input (name and 10-digit phone)        | Inside addContact()                           |
+| Prevent duplicate contact names                         | Inside addContact()                           |
+| View all saved contacts                                 | viewContacts()                                |
+| Search for a contact by name                            | searchContact()                               |
+| Update an existing contact’s name or phone              | updateContact()                               |
+| Validate phone number during update                     | Inside updateContact()                        |
+| Prevent duplicate names during update                   | Inside updateContact()                        |
+| Delete a contact by name                                | deleteContact()                               |
+| Handle invalid user menu input                          | handleChoice()                                |
+| Exit the application gracefully                         | Option "6" in main() and handleChoice()       |
+| Store contact data                                      | ArrayList<String> names, ArrayList<String> phones |
+| Continuous program loop                                 | while(true) in main()                         |
+| User Input handling                                     | Scanner scanner                               |
+| Console Output feedback                                 | System.out.println() in all methods           |
++---------------------------------------------------------+-----------------------------------------------|
+
+
+Every functional requirement of the Contact Manager (Add → View → Search → Update → Delete → Exit) is implemented,
+validated, and user-interactive through console input/output.
+
+The design follows:
+•	KISS (simple linear structure)
+•	DRY (shared validation logic)
+•	SRP (Single Responsibility Principle) at method level
+•	Encapsulation (partial) using method boundaries
